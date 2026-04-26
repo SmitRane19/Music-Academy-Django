@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-od+97r)_f8=+xqq*hg9(ng52g&++5%ry4oeug27xc*4fjc4h58
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = ["https://music-academy-django.onrender.com"]
 
 
 # Application definition
