@@ -1,0 +1,135 @@
+{% extends 'teacher_base.html' %}
+{% load static %}
+
+{% block title %}
+Goonj | Your Batches
+{% endblock title %}
+
+{% block content %}
+<style>
+    /* Custom CSS for layout and design */
+    .container {
+        max-width: 1200px;
+        /* Optionally set a max-width for the container */
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .card {
+        margin-bottom: 20px;
+        border-radius: 10px;
+        border: 1px solid #ddd;
+        /* Add a border to the card */
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        /* Add subtle shadow for depth */
+    }
+
+    .card-body {
+        text-align: left;
+        /* Ensure content inside card is left-aligned */
+    }
+
+    .card-title {
+        font-size: 1.5rem;
+        /* Adjust title size */
+        font-weight: bold;
+        color: #2c3e50;
+        /* Dark color for title */
+    }
+
+    .card-text {
+        font-size: 1.1rem;
+        /* Adjust the font size for date range */
+        color: #7f8c8d;
+        /* Lighter color for text */
+    }
+
+    .collapse {
+        margin-top: 10px;
+    }
+
+    .btn-primary {
+        background-color: #3498db;
+        border: none;
+    }
+
+    .btn-primary:hover {
+        background-color: #2980b9;
+        transition: background-color 0.3s ease;
+    }
+
+    .list-unstyled {
+        padding-left: 0;
+    }
+
+    .list-unstyled li {
+        font-size: 1.1rem;
+        margin-bottom: 10px;
+        /* Space between student names */
+        padding: 5px 10px;
+        /* Padding for each name */
+        border-radius: 5px;
+        background-color: #ecf0f1;
+        /* Light grey background */
+        color: #2c3e50;
+        transition: background-color 0.3s ease;
+    }
+
+    .list-unstyled li:hover {
+        background-color: #bdc3c7;
+        /* Hover effect on student name */
+    }
+
+    .empty-message {
+        color: #e74c3c;
+        /* Red color for "No students" message */
+        font-style: italic;
+    }
+</style>
+
+<div class="container mt-5">
+    <h1 class="fw-bold text-primary text-center">Assigned Batches</h1>
+    <p class="text-center text-muted">Manage your assigned batches and explore the list of students enrolled in them.
+    </p>
+
+    <div class="row mt-4">
+        {% for batch, students in batch_student_mapping.items %}
+        <div class="col-md-6 mb-4">
+            <div class="card border-0 shadow-lg h-100">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">{{ batch.batch_code }} - {{ batch.course.title }}</h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">
+                        <span class="text-secondary">Start:</span> {{ batch.start_date }} |
+                        <span class="text-secondary">End:</span> {{ batch.end_date }}
+                    </p>
+
+                    <!-- Button to toggle collapse -->
+                    <button class="btn btn-outline-primary w-100" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#students-{{ batch.id }}" aria-expanded="false"
+                        aria-controls="students-{{ batch.id }}">
+                        View Students <i class="fa-solid fa-chevron-down"></i>
+                    </button>
+
+                    <!-- Collapsible student list -->
+                    <div id="students-{{ batch.id }}" class="collapse mt-3">
+                        <ul class="list-group list-group-flush">
+                            {% for student in students %}
+                            <li class="list-group-item d-flex align-items-center">
+                                <i class="fa-solid fa-user-circle me-2 text-primary"></i>
+                                {{ student.first_name|capfirst }} {{ student.last_name|capfirst }}
+                            </li>
+                            {% empty %}
+                            <li class="list-group-item text-danger">No students assigned to this batch.</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock content %}

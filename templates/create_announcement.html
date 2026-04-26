@@ -1,0 +1,69 @@
+{% extends 'teacher_base.html' %}
+
+{% block title %}Create Announcement{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <!-- Page Header -->
+    <h3 class="mb-4 text-center text-primary fw-bold">Create Announcement for Batch: <span class="text-dark">{{batch.batch_code }}</span></h3>
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="card shadow-lg rounded-3 p-4">
+            <!-- Announcement Title -->
+            <div class="mb-4">
+                <label for="title" class="form-label fs-5 fw-semibold">Announcement Title</label>
+                <div class="input-group">
+                    <input type="text" name="title" id="title" class="form-control form-control-lg shadow-sm"
+                        placeholder="Enter announcement title" required>
+                    <span class="input-group-text bg-primary text-white"><i class="bi bi-megaphone-fill"></i></span>
+                </div>
+            </div>
+
+            <!-- Message -->
+            <div class="mb-4">
+                <label for="message" class="form-label fs-5 fw-semibold">Message</label>
+                <div class="input-group">
+                    <textarea name="message" id="message" class="form-control form-control-lg shadow-sm" rows="5"
+                        placeholder="Enter announcement details" required></textarea>
+                    <span class="input-group-text bg-primary text-white"><i class="bi bi-pencil-square"></i></span>
+                </div>
+            </div>
+
+            <!-- Date -->
+            <div class="mb-4">
+                <label for="date" class="form-label fs-5 fw-semibold">Date</label>
+                <div class="input-group">
+                    <input type="date" name="date" id="date" class="form-control form-control-lg shadow-sm"
+                        value="{{ today_date }}" required>
+                    <span class="input-group-text bg-primary text-white"><i class="bi bi-calendar-fill"></i></span>
+                </div>
+            </div>
+
+            <!-- Select Students -->
+            <div class="mb-4">
+                <label for="students" class="form-label fs-5 fw-semibold">Select Students</label>
+                <div class="input-group">
+                    <select name="students" id="students" class="form-select form-select-lg shadow-sm">
+                        <option value="all">All Students in the Batch</option>
+                        {% for student in batch.students.all %}
+                        <option value="{{ student.id }}">{{ student.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <span class="input-group-text bg-primary text-white"><i class="bi bi-person-check-fill"></i></span>
+                </div>
+            </div>
+
+            <!-- Buttons -->
+            <div class="d-flex justify-content-between mt-4">
+                <button type="submit" class="btn btn-lg btn-success px-5 rounded-pill shadow-lg">
+                    <i class="bi bi-check-circle-fill"></i> Post Announcement
+                </button>
+                <a href="{% url 'batch_details' batch.id %}" class="btn btn-lg btn-danger px-5 rounded-pill shadow-lg">
+                    <i class="bi bi-x-circle-fill"></i> Cancel
+                </a>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

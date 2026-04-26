@@ -1,0 +1,130 @@
+{% extends 'teacher_base.html' %}
+{% load static %}
+
+{% block title %}
+Goonj | View Enrolled Students
+{% endblock title %}
+
+{% block content %}
+<style>
+    /* Custom CSS for layout and design */
+    .container {
+        max-width: 1200px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .card {
+        margin-bottom: 20px;
+        border-radius: 10px;
+        border: 1px solid #ddd;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-body {
+        text-align: left;
+    }
+
+    .card-title {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #2c3e50;
+    }
+
+    .card-text {
+        font-size: 1.1rem;
+        color: #7f8c8d;
+    }
+
+    .collapse {
+        margin-top: 10px;
+    }
+
+    .btn-primary {
+        background-color: #3498db;
+        border: none;
+    }
+
+    .btn-primary:hover {
+        background-color: #2980b9;
+        transition: background-color 0.3s ease;
+    }
+
+    .list-unstyled {
+        padding-left: 0;
+    }
+
+    .list-unstyled li {
+        font-size: 1.1rem;
+        margin-bottom: 10px;
+        padding: 5px 10px;
+        border-radius: 5px;
+        background-color: #ecf0f1;
+        color: #2c3e50;
+        transition: background-color 0.3s ease;
+    }
+
+    .list-unstyled li:hover {
+        background-color: #bdc3c7;
+    }
+
+    .empty-message {
+        color: #e74c3c;
+        font-style: italic;
+    }
+</style>
+
+<div class="container mt-5">
+    <h1 class="fw-bold text-success text-center">Enrolled Students</h1>
+    <p class="text-center text-muted">View and manage the students enrolled in your assigned batches.</p>
+
+    {% if batch_student_mapping %}
+    <div class="row mt-4">
+        {% for batch, students in batch_student_mapping.items %}
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card border-light shadow h-100">
+                <div class="card-body">
+                    <h5 class="card-title text-success">{{ batch.batch_code }}</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">{{ batch.course.title }}</h6>
+                    <p class="card-text">
+                        <span class="text-secondary">Start Date:</span> {{ batch.start_date }} <br>
+                        <span class="text-secondary">End Date:</span> {{ batch.end_date }}
+                    </p>
+
+                    <!-- Button to toggle collapse -->
+                    <button class="btn btn-success w-100" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#students-{{ batch.id }}" aria-expanded="false"
+                        aria-controls="students-{{ batch.id }}">
+                        View Enrolled Students <i class="fa-solid fa-graduation-cap"></i>
+                    </button>
+
+                    <!-- Collapsible student list -->
+                    <div id="students-{{ batch.id }}" class="collapse mt-3">
+                        <h6 class="text-muted">Students:</h6>
+                        <ul class="list-group">
+                            {% for student in students %}
+                            <li class="list-group-item">
+                                <a href="{% url 'student_profile' student.id %}"
+                                    class="badge bg-success text-white p-2">
+                                    {{ student.first_name|capfirst }} {{ student.last_name|capfirst }}
+                                </a>
+                            </li>
+                            {% empty %}
+                            <li class="list-group-item text-danger">No students enrolled in this batch.</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center mt-5">
+        <p class="text-danger fs-5">No batches assigned to you or no students enrolled.</p>
+    </div>
+    {% endif %}
+</div>
+
+
+{% endblock content %}

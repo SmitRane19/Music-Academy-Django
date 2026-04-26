@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+{% block title %}
+Goonj | Search
+{% endblock title %}
+{% block content %}
+<div class="container my-5">
+    <h2 class="fw-bold mb-4 text-center text-uppercase text-danger">Search Results for "{{ search_term }}"</h2>
+
+    <!-- Online Courses Section -->
+    {% if online_courses %}
+    <h3 class="text-success mb-4">Online Courses</h3>
+    <div class="row g-4">
+        {% for course in online_courses %}
+        <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+            <a href="{% url 'online_course_details' course.id %}" class="text-decoration-none text-dark">
+                <div class="card shadow-lg rounded-4 overflow-hidden h-100" style="border: none;">
+                    <img src="{{ course.image.url }}" class="card-img-top" alt="{{ course.title }}"
+                        style="height: 200px; object-fit: cover;">
+                    <span class="badge bg-info text-dark position-absolute top-0 start-0 m-2">Online</span>
+                    <div class="card-body d-flex flex-column justify-content-between">
+                        <h5 class="card-title text-truncate" title="{{ course.title }}"
+                            style="font-size: 1.2rem; font-weight: bold;">{{ course.title }}</h5>
+                        <!-- <p class="card-text text-muted mb-3" style="font-size: 1rem;">{{ course.description|truncatewords:15 }}</p> -->
+                        <div class="d-flex justify-content-between align-items-center">
+                            <p class="card-text text-secondary"><strong>Fees:</strong> ₹{{ course.fees }}</p>
+                            <button class="btn btn-primary rounded-pill shadow-sm" style="font-size: 1rem;">More Info <i
+                                    class="fa-solid fa-circle-info"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="alert alert-warning text-center">No online courses found.</div>
+    {% endif %}
+
+    <!-- Offline Courses Section -->
+    {% if offline_courses %}
+    <h3 class="text-success mt-5 mb-4">Offline Courses</h3>
+    <div class="row g-4">
+        {% for course in offline_courses %}
+        <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+            <a href="{% url 'offline_course_details' course.id %}" class="text-decoration-none text-dark">
+                <div class="card shadow-lg rounded-4 overflow-hidden h-100" style="border: none;">
+                    <img src="{{ course.image.url }}" class="card-img-top" alt="{{ course.title }}"
+                        style="height: 200px; object-fit: cover;">
+                    <span class="badge bg-success text-dark position-absolute top-0 start-0 m-2">Offline</span>
+                    <div class="card-body d-flex flex-column justify-content-between">
+                        <h5 class="card-title text-truncate" title="{{ course.title }}"
+                            style="font-size: 1.2rem; font-weight: bold;">{{ course.title }}</h5>
+                        <!-- <p class="card-text text-muted mb-3" style="font-size: 1rem;">{{ course.description|truncatewords:15 }}</p> -->
+                        <div class="d-flex justify-content-between align-items-center">
+                            <p class="card-text text-secondary"><strong>Fees:</strong> ₹{{ course.fees }}</p>
+                            <button class="btn btn-success rounded-pill shadow-sm" style="font-size: 1rem;">More Info <i
+                                    class="fa-solid fa-circle-info"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="alert alert-warning text-center">No offline courses found.</div>
+    {% endif %}
+</div>
+
+<style>
+    body {
+        font-family: 'Poppins', sans-serif;
+        background-color: #f4f5f7;
+        color: #333;
+    }
+
+    h2 {
+        font-size: 2.5rem;
+        text-transform: uppercase;
+        font-weight: 700;
+    }
+
+    h3 {
+        font-size: 1.8rem;
+        font-weight: 600;
+    }
+
+    .card {
+        transition: transform 0.4s ease, box-shadow 0.4s ease;
+    }
+
+    .card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .card-title {
+        font-size: 1.2rem;
+        color: #333;
+    }
+
+    .btn {
+        transition: transform 0.3s ease, background-color 0.3s ease;
+    }
+
+    .btn:hover {
+        transform: translateY(-2px);
+        opacity: 0.9;
+    }
+
+    .alert-warning {
+        background-color: #fff4e5;
+        color: #856404;
+    }
+
+    @media (max-width: 768px) {
+        h2 {
+            font-size: 2rem;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+        }
+
+        .card-title {
+            font-size: 1rem;
+        }
+    }
+</style>
+
+<script>
+    // Add a small animation effect on load for cards
+    document.addEventListener("DOMContentLoaded", function () {
+        const cards = document.querySelectorAll('.card');
+        cards.forEach((card, index) => {
+            setTimeout(() => {
+                card.classList.add('animate__animated', 'animate__fadeInUp');
+            }, index * 100);
+        });
+    });
+</script>
+{% endblock %}

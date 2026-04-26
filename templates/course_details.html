@@ -1,0 +1,206 @@
+{% extends "base.html" %}
+
+{% block title %}
+Goonj Music Academy | Course Details
+{% endblock title %}
+
+{% block content %}
+<div class="container-fluid py-5" style="background: linear-gradient(135deg, #ff7e5f, #feb47b); min-height: 100vh;">
+    <div class="row g-4 justify-content-center">
+        <!-- Left Panel -->
+        <div class="col-lg-5 col-md-6" style="min-height: 70vh;">
+            <div class="position-sticky p-4 bg-white rounded-4 shadow-lg" style="top: 0;">
+                <div class="text-center mb-4">
+                    <img src="{{ course.image.url }}" class="img-fluid rounded-4 shadow-lg" alt="{{ course.name|title }}" style="max-height: 350px; object-fit: cover;">
+                </div>
+
+                {% if course_type == 'offline' %}
+                <form method="POST" action="{% url 'add_cart' course.id 'offline' %}" class="mt-4">
+                    {% csrf_token %}
+                    <h5 class="text-black fw-bold fs-5 mb-3">Select Your Batch</h5>
+                    {% if batches %}
+                    <div class="list-group mb-4">
+                        {% for batch in batches %}
+                        <div class="list-group-item shadow-sm border-0 rounded-3 mb-3 p-3 d-flex align-items-center justify-content-between batch-item" style="background-color: #f8f9fa;">
+                            <div class="d-flex align-items-center">
+                                <input class="form-check-input me-3 batch-radio" type="radio" name="selected_batch" id="batch{{ batch.id }}" value="{{ batch.id }}" required>
+                                <label class="form-check-label" for="batch{{ batch.id }}">
+                                    <strong class="text-primary fs-6">{{ batch.batch_code }}</strong>
+                                    <br>
+                                    <small class="text-muted fst-italic">{{ batch.start_date }} to {{ batch.end_date }} <br> {{ batch.start_time }} to {{ batch.end_time }}</small>
+                                </label>
+                            </div>
+                            <span class="badge px-3 py-1 text-white d-inline-flex align-items-center" style="font-size: 0.9rem; background-color: {% if batch.current_students >= batch.max_students %}#dc3545{% else %}#28a745{% endif %};">
+                                {% if batch.current_students >= batch.max_students %}
+                                <span class="me-2">Unavailable</span>
+                                {% else %}
+                                <span class="me-2">Available</span>
+                                {% endif %}
+                                <span>({{ batch.current_students }}/{{ batch.max_students }} students)</span>
+                            </span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="alert alert-warning text-center" role="alert">
+                        <i class="fa-solid fa-exclamation-circle me-2"></i> No upcoming or recently started batches available for this offline course.
+                    </div>
+                    {% endif %}
+                    
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'add_to_wishlist' course.id 'offline' %}" class="btn btn-outline-light w-48 rounded-pill shadow-lg d-flex align-items-center">
+                            <i class="fa-solid fa-heart me-2"></i> Add to Wishlist
+                        </a>
+                        <button type="submit" class="btn btn-warning w-48 rounded-pill shadow-lg d-flex align-items-center">
+                            <i class="fa-solid fa-calendar-check me-2"></i> Reserve Your Spot
+                        </button>
+                    </div>
+                </form>
+                {% elif course_type == 'online' %}
+                <form method="POST" action="{% url 'add_cart' course.id 'online' %}" class="mt-4">
+                    {% csrf_token %}
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'add_to_wishlist' course.id 'online' %}" class="btn btn-outline-light w-48 rounded-pill shadow-lg d-flex align-items-center">
+                            <i class="fa-solid fa-heart me-2"></i> Add to Wishlist
+                        </a>
+                        <button type="submit" class="btn btn-warning w-48 rounded-pill shadow-lg d-flex align-items-center">
+                            <i class="fa-solid fa-cart-shopping me-2"></i> Add to Cart
+                        </button>
+                    </div>
+                </form>
+                {% endif %}
+            </div>
+        </div>
+        <!-- End Left Panel -->
+
+        <!-- Right Panel -->
+        <div class="col-lg-7 col-md-6" style="min-height: 70vh;">
+            <div class="p-4 bg-white rounded-4 shadow-lg">
+                <h4 class="fw-bold text-dark display-5 mb-3">{{ course.title|title }}</h4>
+                <p class="text-warning fw-semibold fs-4">₹{{ course.fees }}/-</p>
+                <hr>
+
+                <h5 class="mt-4 text-secondary fw-semibold">Course Highlights</h5>
+                <p class="text-muted">{{ course.description|safe }}</p>
+
+                {% if course_type == 'online' %}
+                <p class="text-muted mb-2 small">
+                    <i class="fa-solid fa-clock me-1"></i> Duration: {{ course.duration }} hours
+                </p>
+                {% endif %}
+
+                <h5 class="mt-4 text-success fw-semibold">Available Offers</h5>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item d-flex justify-content-between align-items-center bg-light border-0">
+                        10% Discount for Early Bird Enrollment
+                        <span class="badge bg-info text-dark">T&C</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center bg-light border-0">
+                        Special Price: Get extra cashback with selected payment methods
+                        <span class="badge bg-info text-dark">T&C</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center bg-light border-0">
+                        Referral Offer: Invite a friend and get additional rewards
+                        <span class="badge bg-info text-dark">T&C</span>
+                    </li>
+                </ul>
+
+                <div class="alert alert-success mt-3" role="alert">
+                    <i class="fa-solid fa-gift me-2"></i> Exclusive access to Goonj Music Academy resources for enrolled students.
+                </div>
+            </div>
+        </div>
+        <!-- End Right Panel -->
+    </div>
+</div>
+
+<style>
+    body {
+        font-family: 'Poppins', sans-serif;
+        background-color: #f4f6f9;
+    }
+
+    .list-group-item:hover {
+        background-color: #ffcc00;
+        transform: scale(1.05);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn:hover {
+        transform: scale(1.05);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .rounded-4 {
+        border-radius: 20px;
+    }
+
+    .btn-outline-light {
+        color: black !important;
+        border-color: #f8f9fa !important;
+    }
+
+    .btn-outline-light:hover {
+        background-color: #f8f9fa;
+        color: black !important;
+    }
+
+    .shadow-lg {
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    hr {
+        border-top: 2px solid #feb47b;
+        margin: 1.5rem 0;
+    }
+
+    .alert {
+        border-radius: 10px;
+    }
+    /* Batch Item Styles */
+    .batch-item {
+        transition: transform 0.2s ease, background-color 0.3s ease;
+    }
+
+    .batch-item:hover {
+        transform: scale(1.02);
+        background-color: #fff7e6;
+    }
+
+    .batch-radio {
+        width: 1.5rem;
+        height: 1.5rem;
+        cursor: pointer;
+    }
+
+    .batch-radio:checked + label {
+        font-weight: bold;
+        color: #ff7e5f;
+    }
+
+    .batch-radio:checked + label strong {
+        color: #ff6f61;
+    }
+
+    .list-group-item {
+        display: flex;
+        align-items: center;
+        padding: 1rem;
+        border-radius: 15px;
+    }
+
+    .list-group-item .badge {
+        border-radius: 10px;
+    }
+
+    .batch-item label {
+        cursor: pointer;
+        font-size: 0.95rem;
+    }
+
+    .batch-item small {
+        font-size: 0.85rem;
+    }
+</style>
+{% endblock content %}

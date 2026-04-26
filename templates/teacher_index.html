@@ -1,0 +1,100 @@
+{% extends "teacher_base.html" %}
+{% load static %}
+{% block title %}
+  Goonj | Home
+{% endblock title %}
+
+
+{% block content %}
+    <!-- Welcome Banner with Image and Overlay Message -->
+    <div class="welcome-banner" style="position: relative; text-align: center; color: white;">
+        <img src="{% static 'images/teacherwelcome.png' %}" alt="Welcome Banner" class="img-fluid">
+        <div class="overlay-message">
+            <h3>Welcome, {% if user.is_authenticated %}{{ user.first_name|capfirst }}{% else %}Teacher{% endif %}!</h3>
+            <p>We are glad to have you at Goonj Music Academy. Explore the dashboard for your courses and students!</p>
+        </div>
+    </div>
+
+    <div class="container my-5">
+        <h1 class="fw-bold text-primary text-center">Teacher Dashboard</h1>
+        <p class="text-center text-muted">Welcome to your teacher dashboard! Here you can manage your courses and students effectively.</p>
+    
+        <h2 class="text-secondary mt-5 mb-4 text-center">Batch Management</h2>
+        <div class="row">
+            {% for batch in batches %}
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm border-light rounded h-100">
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title text-dark">{{ batch.course }}</h5>
+                        <p class="card-text text-secondary">Total Students: <strong>{{ batch.active_students }}</strong></p>
+                        <a href="{% url 'batch_details' batch.id %}" class="btn btn-primary mt-auto w-100">Manage Batch <i class="fa-solid fa-users"></i></a>
+                        <a href="{% url 'upload_course_content' batch.id %}" class="btn btn-success mt-2 w-100">Add Course Content <i class="fa-solid fa-plus-circle"></i></a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    
+    
+    
+    
+    <!--
+Index Page for Teacher Dashboard
+The index page should give teachers a quick overview of their current status, upcoming tasks, and recent activities. Here are some important sections to include:
+
+Welcome Message: A personalized greeting, such as "Welcome, [Teacher’s Name]".
+Dashboard Overview:
+Upcoming Classes: A list of upcoming lessons or lectures with the ability to add or edit them.
+Current Courses: Display the active courses, student count, and enrollment status for each course.
+Recent Activities: A feed or list showing recent updates like student submissions, grades given, or new enrollments.
+Notifications: Alerts for new assignments, messages from students, or changes in the course schedule.
+Quick Actions:
+Create New Course: A button for adding new courses or assignments quickly.
+Post Announcement: A button to send course announcements to students.
+Grade Assignments: A quick link to review and grade pending assignments or exams.
+Analytics: A snapshot of course statistics such as the average grade of students, the number of students enrolled, and overall course performance.
+Calendar/Upcoming Events: A calendar section showing upcoming classes, exams, meetings, and deadlines.
+Student Feedback: Display recent feedback from students about courses or teaching performance.
+Resources: Quick access to teaching resources, such as templates, materials, or a library of teaching aids.
+The layout of the index page should be well-organized with cards, graphs, and tables for easy visualization of data. It should offer a clean, simple interface while giving access to detailed views when needed.-->
+
+<style>
+.welcome-banner {
+    position: relative;
+    text-align: center;
+    color: white;
+    overflow: hidden;
+}
+
+.welcome-banner img {
+    width: 100%;
+    height: 400px; /* Adjust the height */
+    object-fit: cover; /* Ensures the image fills the space and maintains aspect ratio */
+}
+
+.overlay-message {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: transparent; /* Darker semi-transparent background for contrast */
+    padding: 20px;
+    border-radius: 10px;
+    max-width: 80%; /* Optional: Set max width to avoid too wide message */
+}
+
+.overlay-message h3 {
+    font-size: 2.5em; /* Increase font size */
+    margin-bottom: 15px;
+    color: crimson; /* Gold color for the title text */
+}
+
+.overlay-message p {
+    font-size: 1.2em;
+    color: crimson; /* White text color for the paragraph */
+}
+</style
+{% endblock content%}
+    

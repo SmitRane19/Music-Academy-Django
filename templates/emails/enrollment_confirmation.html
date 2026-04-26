@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enrollment Confirmation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f9f9f9;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+        }
+        .header h1 {
+            color: #007bff;
+        }
+        .content {
+            margin-top: 20px;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            color: #777;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Goonj Music Academy</h1>
+            <p>Your Path to Musical Mastery</p>
+        </div>
+        <div class="content">
+            <p>Dear {{ user.first_name|title }},</p>
+            <p>We are thrilled to inform you that your payment was successful and your enrollment has been confirmed.</p>
+
+            {% if online_courses %}
+            <h3>Online Courses:</h3>
+            <ul>
+                {% for course in online_courses %}
+                    <li>{{ course }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+
+            {% if offline_courses %}
+            <h3>Offline Courses:</h3>
+            <ul>
+                {% for course in offline_courses %}
+                    <li>
+                        <strong>{{ course.name|title }}</strong><br>
+                        Batch Code: {{ course.batch_code }}<br>
+                        Teacher: {{ course.teacher|title }}<br>
+                        Start Date: {{ course.start_date }}<br>
+                        End Date: {{ course.end_date }}<br>
+                        Start Time: {{ course.start_time }}<br>
+                        End Time: {{ course.end_time }}
+                    </li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+
+            <p>We look forward to helping you achieve your musical goals!</p>
+            <p>Best regards,</p>
+            <p><strong>Goonj Music Academy Team</strong></p>
+        </div>
+        <div class="footer">
+            <p>&copy; {{ current_year }} Goonj Music Academy. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>

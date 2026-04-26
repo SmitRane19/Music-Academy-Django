@@ -1,0 +1,164 @@
+{% extends base_template %}
+
+{% block title %}Profile{% endblock %}
+
+{% block content %}
+<div class="container mt-5 mb-5">
+    <div class="card shadow-lg rounded-5 border-0 bg-white">
+        <div class="card-body">
+            <!-- Profile Header -->
+            <div class="row align-items-center mb-5">
+                <div class="col-md-4 text-center">
+                    <!-- Profile Picture -->
+                    <div class="profile-picture mb-4">
+                        {% if user.profile_picture %}
+                            <img src="{{ user.profile_picture.url }}" class="img-fluid rounded-circle shadow" alt="Profile Picture" style="width: 160px; height: 160px;">
+                        {% else %}
+                            <img src="https://via.placeholder.com/160" class="img-fluid rounded-circle shadow" alt="Profile Picture" style="width: 160px; height: 160px;">
+                        {% endif %}
+                    </div>
+                    <!-- Change Picture Button -->
+                    <a href="{% url 'edit_profile' %}" class="btn btn-outline-primary btn-sm rounded-pill px-4 py-2 mt-2">
+                        <i class="fa-solid fa-camera"></i> Change Picture
+                    </a>
+                </div>
+                <div class="col-md-8">
+                    <!-- User Info -->
+                    <h2 class="mb-3">{{ user.first_name|title }} {{ user.last_name|title }}</h2>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <p><i class="fa-solid fa-user text-primary me-2"></i><strong>Username:</strong> {{ user.username }}</p>
+                            <p><i class="fa-solid fa-calendar text-primary me-2"></i><strong>Date of Birth:</strong> {{ dob|default:"N/A" }}</p>
+                        </div>
+                        <div class="col-sm-6">
+                            <p><i class="fa-solid fa-venus-mars text-primary me-2"></i><strong>Gender:</strong> {{ gender|default:"N/A" }}</p>
+                            <p><i class="fa-solid fa-phone text-primary me-2"></i><strong>Contact:</strong> {{ user.contact|default:"Not Provided" }}</p>
+                        </div>
+                    </div>
+                    <!-- Edit Profile Button -->
+                    <a href="{% url 'edit_profile' %}" class="btn btn-primary mt-3 rounded-pill px-4 py-2">
+                        <i class="fa-solid fa-user-edit"></i> Edit Profile
+                    </a>
+                </div>
+            </div>
+
+            <hr class="mb-4">
+
+            <!-- Courses Section for Students -->
+            {% if is_student %}
+            <div class="card border-0 bg-light text-black mb-4 rounded-3 shadow-sm">
+                <div class="card-body p-4">
+                    <h5 class="card-title mb-3"><i class="fa-solid fa-book text-primary me-2"></i> Your Courses</h5>
+                    {% if courses_count %}
+                        <p>You are enrolled in <strong>{{ courses_count }}</strong> course(s).</p>
+                        <div class="row">
+                            {% if online_courses %}
+                                <div class="col-md-6">
+                                    <h6 class="mt-3">Online Courses:</h6>
+                                    <p>You are enrolled in <strong>{{ online_courses|length }}</strong> online course(s).</p>
+                                </div>
+                            {% endif %}
+                            {% if offline_courses %}
+                                <div class="col-md-6">
+                                    <h6 class="mt-3">Offline Courses:</h6>
+                                    <p>You are enrolled in <strong>{{ offline_courses|length }}</strong> offline course(s).</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% else %}
+                        <p>You are not enrolled in any courses yet.</p>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="card border-0 bg-light text-black mb-4 rounded-3 shadow-sm">
+                <div class="card-body p-4">
+                    <h5 class="card-title mb-3"><i class="fa-solid fa-calendar-check text-info me-2"></i> Attendance Records</h5>
+                    
+                    {% if attendance_data %}
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped">
+                            <thead class="table-primary">
+                                <tr>
+                                    <th>Batch</th>
+                                    <th>Session Date</th>
+                                    <th>Session Topic</th>
+                                    <th>Status</th>
+                                    <th>Remarks</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for record in attendance_data %}
+                                <tr>
+                                    <td>{{ record.batch }}</td>
+                                    <td>{{ record.session_date }}</td>
+                                    <td>{{ record.session_topic }}</td>
+                                    <td>{{ record.status }}</td>
+                                    <td>{{ record.remarks }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                        <p>No attendance records available.</p>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Batches Section for Teachers -->
+            {% if is_teacher %}
+            <div class="card border-0 bg-light text-black mb-4 rounded-3 shadow-sm">
+                <div class="card-body p-4">
+                    <h5 class="card-title mb-3"><i class="fa-solid fa-person-chalkboard text-success me-2"></i> Batches You Teach</h5>
+                    {% if batches_count %}
+                        <p>You are teaching currently in <strong>{{ batches_count }}</strong> batch(es).</p>
+                    {% else %}
+                        <p>You are not teaching any batches currently.</p>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Profile Picture */
+    .profile-picture img {
+        border: 5px solid #f8f9fa;
+    }
+
+    /* Card Styling */
+    .card {
+        border-radius: 15px;
+    }
+
+    .card-body {
+        padding: 30px;
+    }
+
+    .card-title {
+        font-size: 1.4rem;
+        font-weight: 600;
+    }
+
+    /* Icon Styling */
+    .fa-solid {
+        margin-right: 8px;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .profile-picture img {
+            width: 120px;
+            height: 120px;
+        }
+
+        .container {
+            padding: 0 15px;
+        }
+    }
+</style>
+{% endblock %}
+

@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+
+{% block title %}
+Goonj | Cart
+{% endblock title %}
+
+{% block content %}
+<div class="container-fluid my-5">
+  <div class="row justify-content-center g-4">
+
+    <!-- Left Panel: Cart Items -->
+    <div class="col-lg-8">
+      <div class="bg-white shadow-lg rounded-4 p-4 mb-4">
+        <h2 class="fw-bold text-dark mb-4">Your Cart</h2>
+
+        {% if online_courses %}
+        <h4 class="text-primary fw-bold mb-3"><i class="fa-solid fa-laptop-code me-2"></i> Online Courses</h4>
+        <div class="list-group">
+          {% for item in online_courses %}
+          <div class="list-group-item d-flex justify-content-between align-items-center p-3 shadow-sm rounded-4 mb-3">
+            <div class="d-flex align-items-center">
+              <img src="{{ item.course.image.url }}" alt="{{ item.course.title }}" class="img-fluid rounded-circle"
+              style="max-width: 80px; height: 80px; object-fit: cover;">
+              <span class="ms-3 text-dark fs-5">{{ item.course.title }}</span>
+            </div>
+            <div>
+              <span class="text-muted fs-6">₹{{ item.course.fees }}</span>
+            </div>
+            <div>
+              <a href="{% url 'remove_item' item.course.id 'online' %}"
+                class="btn btn-danger btn-sm rounded-pill px-3 py-2"><i class="fa-solid fa-trash me-1"></i> Remove</a>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+
+        {% if offline_courses %}
+        <h4 class="text-primary fw-bold mt-4 mb-3">
+          <i class="fa-solid fa-chalkboard-teacher me-2"></i> Offline Courses
+        </h4>
+        <div class="list-group">
+          {% for item in offline_courses %}
+          <div class="list-group-item d-flex justify-content-between align-items-center p-3 shadow-sm rounded-4 mb-3">
+            <!-- Image and Title -->
+            <div class="d-flex align-items-center" style="min-width: 200px;">
+              <img src="{{ item.course.image.url }}" alt="{{ item.course.title }}" class="img-fluid rounded-circle"
+                style="max-width: 80px; height: 80px; object-fit: cover;">
+              <span class="ms-3 text-dark fs-5">{{ item.course.title }}</span>
+            </div>
+        
+            <!-- Price -->
+            <div class="text-center" style="min-width: 120px;">
+              <span class="text-muted fs-6">₹{{ item.course.fees }}</span>
+            </div>
+        
+            <!-- Batch Details -->
+            <div class="text-center" style="min-width: 200px;">
+              <span class="d-block"><strong>Batch:</strong> {{ item.batch.batch_code }}</span>
+              <span class="d-block"><strong>Start Date:</strong> {{ item.batch.start_date }}</span>
+            </div>
+        
+<!-- Remove Button -->
+<div class="text-center">
+  <a href="{% url 'remove_item' item.course.id 'offline' %}" 
+    class="btn btn-danger btn-sm rounded-pill d-inline-flex align-items-center px-3 py-2">
+    <i class="fa-solid fa-trash me-1"></i> Remove
+  </a>
+</div>
+
+          </div>
+          {% endfor %}
+        </div>
+        
+        {% endif %}
+
+        {% if not online_courses and not offline_courses %}
+        <div class="alert alert-info text-center py-4" role="alert">
+          <i class="fa-solid fa-cart-arrow-down fs-3 mb-2 text-secondary"></i>
+          <p class="mb-0 fs-5">Your cart is empty.</p>
+          <a href="{% url 'index' %}" class="btn btn-primary btn-sm mt-2 rounded-pill px-4">Browse Courses</a>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+    <!-- End Left Panel -->
+
+    <!-- Right Panel: Order Summary (Fixed) -->
+    <div class="col-lg-4">
+      <div class="card shadow-lg p-4 rounded-4 bg-light">
+        <h4 class="fw-bold text-center text-primary"><i class="fa-solid fa-receipt me-2"></i> Order Summary</h4>
+        <hr>
+        <p class="d-flex justify-content-between">
+          <span><i class="fa-solid fa-boxes-stacked me-2"></i>Total Products:</span>
+          <span>{{ online_courses.count|add:offline_courses.count }}</span>
+        </p>
+        <h5 class="d-flex justify-content-between text-primary fw-bold">
+          <span><i class="fa-solid fa-money-bill-wave me-2"></i>Total Price:</span>
+          <span>₹{{ total_amount }}</span>
+        </h5>
+
+        {% if online_courses or offline_courses %}
+        <a href="{% url 'confirm_order' %}" class="btn btn-success w-100 mt-4 py-3 rounded-pill shadow-sm"><i
+            class="fa-solid fa-arrow-right-to-bracket me-2"></i> Proceed to Checkout</a>
+        {% else %}
+        <button class="btn btn-success w-100 mt-4 py-3 rounded-pill shadow-sm" disabled><i
+            class="fa-solid fa-arrow-right-to-bracket me-2"></i> Proceed to Checkout</button>
+        {% endif %}
+      </div>
+    </div>
+    <!-- End Right Panel -->
+
+  </div>
+</div>
+{% endblock content %}
+
+<style>
+  /* Background and Global Styling */
+  body {
+    font-family: 'Roboto', sans-serif;
+    background: linear-gradient(135deg, #f0f9ff, #e0f7fa);
+    margin: 0;
+    padding: 0;
+  }
+
+  h2,
+  h4 {
+    font-family: 'Poppins', sans-serif;
+    color: #333;
+  }
+
+  .list-group-item {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .list-group-item:hover {
+    transform: scale(1.02);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Buttons */
+  .btn {
+    font-size: 1rem;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+  }
+
+  .btn:hover {
+    transform: translateY(-3px);
+  }
+
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .col-lg-8,
+    .col-lg-4 {
+      width: 100%;
+    }
+  }
+</style>

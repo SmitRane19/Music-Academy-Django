@@ -1,0 +1,198 @@
+        /* Apply cursive font to brand and text in carousel captions */
+        body {
+            font-family: 'Poppins', sans-serif; /* Default stylish font */
+        }
+        
+        .navbar-brand, .carousel-caption h3, .carousel-caption p, .carousel-caption .btn {
+            font-family: 'Dancing Script', cursive;
+            font-size: 1.5rem;
+        }
+
+        /* Centering text and button in the carousel */
+
+        
+            /* Remove blue color and underline from clickable cards */
+            a {
+                color: inherit; /* Inherit the color from the parent element */
+                text-decoration: none; /* Remove underline */
+            }
+        
+            a:hover {
+                text-decoration: none; /* Ensure no underline on hover */
+                color: inherit; /* Ensure the color stays consistent on hover */
+            }
+        
+            .star-rating {
+                    color: #ffc107;
+                }
+        
+                .review-header {
+                    display: flex;
+                    align-items: center;
+                    margin-bottom: 15px;
+                }
+        
+                .review-header img {
+                    border-radius: 50%;
+                    width: 50px;
+                    height: 50px;
+                    margin-right: 15px;
+                    object-fit: cover;
+                }
+        
+                /* Optional: styling for cards and their images */
+                .card-img-top {
+                    height: 200px;
+                    object-fit: cover;
+                }
+                .card-body {
+                    text-align: center;
+                }
+        
+                .blurb {
+                transition: transform 0.3s ease, opacity 0.3s ease;
+            }
+        
+            .blurb:hover {
+                transform: translateY(-10px);
+                opacity: 0.9;
+            }
+        
+            .display-4 {
+                font-size: 3rem;
+            }
+        
+            .text-primary {
+                color: #007bff !important;
+            }
+        
+            .text-muted {
+                color: #6c757d;
+            }
+        
+            .shadow-lg {
+                box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.1);
+            }
+        
+            .img-fluid {
+                transition: transform 0.3s ease;
+                border-radius: 15px;
+            }
+        
+            .img-fluid:hover {
+                transform: scale(1.05);
+            }
+        
+            h2 {
+                font-size: 2.5rem;
+            }
+        
+
+        
+        /* footer section*/
+        .footer_section {
+        background-color: #222831;
+        color: #ffffff;
+        padding: 75px 0 40px 0;
+        text-align: center;
+        }
+
+        .footer_section h4 {
+        font-size: 28px;
+        }
+
+        .footer_section h4,
+        .footer_section .footer-logo {
+        font-weight: 600;
+        margin-bottom: 20px;
+        font-family: 'Dancing Script', cursive;
+        }
+
+        .footer_section p {
+        color: #dbdbdb;
+        }
+
+        .footer_section .footer-col {
+        margin-bottom: 30px;
+        }
+
+        .footer_section .footer_contact .contact_link_box {
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-orient: vertical;
+        -webkit-box-direction: normal;
+            -ms-flex-direction: column;
+                flex-direction: column;
+        }
+
+        .footer_section .footer_contact .contact_link_box a {
+        margin: 5px 0;
+        color: #ffffff;
+        }
+
+        .footer_section .footer_contact .contact_link_box a i {
+        margin-right: 5px;
+        }
+
+        .footer_section .footer_contact .contact_link_box a:hover {
+        color: #ffbe33;
+        }
+
+        .footer_section .footer-logo {
+        display: block;
+        font-weight: bold;
+        font-size: 38px;
+        line-height: 1;
+        color: #ffffff;
+        }
+
+        .footer_section .footer_social {
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-pack: center;
+            -ms-flex-pack: center;
+                justify-content: center;
+        margin-top: 20px;
+        margin-bottom: 10px;
+        }
+
+        .footer_section .footer_social a {
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-pack: center;
+            -ms-flex-pack: center;
+                justify-content: center;
+        -webkit-box-align: center;
+            -ms-flex-align: center;
+                align-items: center;
+        color: #222831;
+        width: 30px;
+        height: 30px;
+        border-radius: 100%;
+        background-color: #ffffff;
+        border-radius: 100%;
+        margin: 0 2.5px;
+        font-size: 18px;
+        }
+
+        .footer_section .footer_social a:hover {
+        color: #ffbe33;
+        }
+
+        .footer_section .footer-info {
+        text-align: center;
+        margin-top: 25px;
+        }
+
+        .footer_section .footer-info p {
+        color: #ffffff;
+        margin: 0;
+        }
+
+        .footer_section .footer-info p a {
+        color: inherit;
+        }
+

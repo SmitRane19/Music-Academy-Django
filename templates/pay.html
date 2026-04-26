@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+Goonj | Payment
+{% endblock title %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <!-- Payment Card -->
+            <div class="card shadow-lg border-0">
+                <div class="card-header text-center bg-primary text-white">
+                    <h3 class="mb-0">Complete Your Payment</h3>
+                    <p class="text-light mb-0">Securely process your payment for the course.</p>
+                </div>
+                <div class="card-body p-5">
+                    <!-- Payment Details -->
+                    <div class="text-center">
+                        <h5 class="card-title text-success fw-bold mb-4">Amount: ₹{{ data.amount|floatformat:2 }}</h5>
+                        <p class="text-muted">You are about to pay for the course at <strong>Goonj Music
+                                Academy</strong>.</p>
+                        <p class="text-muted mb-4">Once the payment is completed, you'll receive a confirmation and
+                            course access.</p>
+                    </div>
+
+                    <!-- Razorpay Button -->
+                    <div class="d-grid gap-2 mt-4">
+                        <button id="rzp-button1" class="btn btn-lg btn-primary fw-bold py-3">
+                            Pay with Razorpay
+                        </button>
+                    </div>
+                </div>
+                <div class="card-footer bg-light text-center">
+                    <small class="text-muted">Powered by Razorpay</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+    var options = {
+        "key": "rzp_test_n0lhpmrEfeIhGJ", // Enter the Key ID generated from the Dashboard
+        "amount": "{{ data.amount|floatformat:2 }}", // Amount in INR (no conversion needed here)
+        "currency": "INR",
+        "name": "Goonj Music Academy",
+        "description": "Test Transaction",
+        "image": "https://example.com/your_logo", // Update with your actual logo
+        "order_id": "{{ payment.id }}", // This is the Razorpay Order ID
+        "handler": function (response) {
+            window.location.href = `/payment-success?payment_id=${response.razorpay_payment_id}&order_id={{ data.receipt }}`;
+        },
+        "prefill": {
+            "name": "Gaurav Kumar",
+            "email": "gaurav.kumar@example.com",
+            "contact": "9000090000"
+        },
+        "notes": {
+            "address": "Razorpay Corporate Office"
+        },
+        "theme": {
+            "color": "#3399cc"
+        }
+    };
+
+    var rzp1 = new Razorpay(options);
+
+    rzp1.on('payment.failed', function (response) {
+        alert(response.error.code);
+        alert(response.error.description);
+        alert(response.error.source);
+        alert(response.error.step);
+        alert(response.error.reason);
+        alert(response.error.metadata.order_id);
+        alert(response.error.metadata.payment_id);
+    });
+
+    document.getElementById('rzp-button1').onclick = function (e) {
+        rzp1.open();
+        e.preventDefault();
+    }
+</script>
+
+<style>
+    .card-header {
+        border-radius: 0.5rem 0.5rem 0 0;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-body {
+        background-color: #fdfdfd;
+        border-radius: 0 0 0.5rem 0.5rem;
+    }
+
+    #rzp-button1 {
+        transition: all 0.3s ease-in-out;
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    #rzp-button1:hover {
+        transform: scale(1.05);
+        box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.15);
+    }
+</style>
+{% endblock content %}

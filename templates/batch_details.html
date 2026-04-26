@@ -1,0 +1,137 @@
+{% extends 'teacher_base.html' %}
+
+{% block title %}Batch Details{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+
+    <!-- Page Heading -->
+    <h3 class="mb-4 text-center text-primary fw-bold">Batch: <span class="text-dark">{{ batch.batch_code }}</span></h3>
+
+    <!-- Attendance Section -->
+    <div class="card mb-4 shadow-lg rounded-3">
+        <div class="card-header bg-primary text-white rounded-3">
+            <h5 class="card-title mb-0">Mark Attendance</h5>
+        </div>
+        <div class="card-body">
+            <p class="card-text fs-5">Click below to mark attendance for each session:</p>
+            <div class="list-group">
+                {% for session in sessions %}
+                <a href="{% url 'mark_attendance' batch_id=batch.id session_id=session.id %}"
+                    class="list-group-item list-group-item-action d-flex justify-content-between align-items-center border-0 bg-light shadow-sm hover-shadow">
+                    {{ session.topic }} - {{ session.date }} at {{ session.start_time }}
+                    <span class="badge bg-primary rounded-pill">Mark Attendance</span>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Sessions Section -->
+    <div class="card mb-4 shadow-lg rounded-3">
+        <div class="card-header bg-success text-white rounded-3">
+            <h5 class="card-title mb-0">Upcoming Sessions</h5>
+        </div>
+        <div class="card-body">
+            <p class="card-text fs-5">Here are the upcoming sessions for this batch:</p>
+            <ul class="list-group">
+                {% for session in sessions %}
+                <li
+                    class="list-group-item d-flex justify-content-between align-items-center border-0 bg-light hover-shadow">
+                    <div>
+                        <strong>{{ session.topic }}</strong><br>
+                        <small class="text-muted">{{ session.date }} at {{ session.start_time }}</small>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+            <a href="{% url 'schedule_session' batch.id %}"
+                class="btn btn-success btn-lg mt-3 w-100 rounded-pill shadow-lg hover-shadow">
+                <i class="bi bi-calendar-plus"></i> Schedule a New Session
+            </a>
+        </div>
+    </div>
+
+    <!-- Announcements Section -->
+    <div class="card mb-4 shadow-lg rounded-3">
+        <div class="card-header bg-warning text-dark rounded-3">
+            <h5 class="card-title mb-0">Recent Announcements</h5>
+        </div>
+        <div class="card-body">
+            <p class="card-text fs-5">View and manage announcements for this batch:</p>
+            <ul class="list-group">
+                {% for announcement in announcements %}
+                <li class="list-group-item border-0 bg-light shadow-sm hover-shadow">
+                    <strong>{{ announcement.title }}</strong><br>
+                    <small class="text-muted">Posted on: {{ announcement.created_at }}</small>
+                </li>
+                {% endfor %}
+            </ul>
+            <a href="{% url 'create_announcement' batch.id %}"
+                class="btn btn-warning btn-lg mt-3 w-100 rounded-pill shadow-lg hover-shadow">
+                <i class="bi bi-pencil-square"></i> Create New Announcement
+            </a>
+        </div>
+    </div>
+
+</div>
+
+<!-- Additional Styles -->
+<style>
+    /* Background color */
+    body {
+        background-color: #f8f9fa;
+    }
+
+    /* Hover effect for list items */
+    .list-group-item:hover {
+        background-color: #e9ecef;
+        transform: translateY(-3px);
+        transition: transform 0.2s ease-in-out;
+    }
+
+    /* Shadow effect for elements */
+    .shadow-lg {
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Button hover effects */
+    .btn:hover {
+        transform: translateY(-3px);
+        transition: transform 0.2s ease-in-out;
+    }
+
+    /* Rounded card header */
+    .card-header {
+        font-size: 1.2rem;
+        padding: 1.25rem;
+        border-radius: 10px 10px 0 0;
+    }
+
+    /* Enhanced typography for card text */
+    .card-text {
+        font-size: 1.1rem;
+    }
+
+    /* Shadow for new session and announcement buttons */
+    .shadow-lg {
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Button Styling */
+    .btn {
+        font-size: 1.1rem;
+    }
+
+    /* Hover shadow for buttons */
+    .hover-shadow:hover {
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Custom Rounded pill buttons */
+    .rounded-pill {
+        border-radius: 50px;
+    }
+</style>
+
+{% endblock %}

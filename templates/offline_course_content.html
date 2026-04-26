@@ -1,0 +1,268 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}
+Goonj | Offline Course Content
+{% endblock title %}
+
+{% block content %}
+<div class="container mt-5 mb-5">
+    <div class="row g-4">
+        <!-- Left Panel: Course Content List -->
+        <div class="col-md-4 p-4 shadow-lg rounded bg-light">
+            <h3 class="text-primary mb-4"><i class="fas fa-book"></i> Course Content</h3>
+            <div class="accordion" id="contentAccordion">
+                {% for content in related_course_contents %}
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="heading{{ forloop.counter }}">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#collapse{{ forloop.counter }}" aria-expanded="false"
+                            aria-controls="collapse{{ forloop.counter }}">
+                            {{ content.title }}
+                        </button>
+                    </h2>
+                    <div id="collapse{{ forloop.counter }}" class="accordion-collapse collapse"
+                        aria-labelledby="heading{{ forloop.counter }}" data-bs-parent="#contentAccordion">
+                        <div class="accordion-body">
+                            {% if content.description %}
+                            <p class="text-muted">{{ content.description|safe }}</p>
+                            {% endif %}
+                            <h5 class="mt-3"><i class="fas fa-file-alt"></i> Files:</h5>
+                            <ul class="list-group">
+                                {% for file in content.files.all %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <span class="file-details">
+                                        <strong>{{ file.title }}</strong>
+                                        <small class="text-muted">({{ file.get_file_type_display }})</small>
+                                    </span>
+                                    <button class="btn btn-sm btn-outline-primary uniform-button"
+                                        onclick="loadFile('{{ file.file_type }}', '{{ file.file.url }}')">
+                                        {% if file.file_type == 'pdf' %}
+                                        <i class="fas fa-file-pdf"></i> View PDF
+                                        {% elif file.file_type == 'video' %}
+                                        <i class="fas fa-video"></i> Watch Video
+                                        {% endif %}
+                                    </button>
+                                </li>
+                                {% empty %}
+                                <p class="text-muted">No files available.</p>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Right Panel: File Viewer -->
+        <div class="col-md-8 p-4 shadow-lg rounded bg-light d-flex flex-column">
+            <h3 class="text-primary mb-4"><i class="fas fa-eye"></i> File Viewer</h3>
+            <div id="viewer" class="viewer-container flex-grow-1">
+                <p class="text-muted">Select a file to view its content here.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Teacher Uploaded Files Section -->
+<div class="container mt-5 mb-5 p-4 shadow-lg rounded bg-light">
+    <h3 class="text-success"><i class="fas fa-upload"></i> Teacher Uploaded Files</h3>
+    <div class="accordion" id="teacherFilesAccordion">
+        {% for teacher_file in teacher_uploaded_files %}
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingTeacherFile{{ forloop.counter }}">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#collapseTeacherFile{{ forloop.counter }}" aria-expanded="false"
+                    aria-controls="collapseTeacherFile{{ forloop.counter }}">
+                    {{ teacher_file.title }}
+                </button>
+            </h2>
+            <div id="collapseTeacherFile{{ forloop.counter }}" class="accordion-collapse collapse"
+                aria-labelledby="headingTeacherFile{{ forloop.counter }}" data-bs-parent="#teacherFilesAccordion">
+                <div class="accordion-body">
+                    <h5><i class="fas fa-file-alt"></i> File:</h5>
+                    <ul class="list-group">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span class="file-details">
+                                <strong>{{ teacher_file.title }}</strong>
+                                <small class="text-muted">({{ teacher_file.get_file_type_display }})</small>
+                            </span>
+                            <button class="btn btn-sm btn-outline-success uniform-button"
+                                onclick="loadFile('{{ teacher_file.file_type }}', '{{ teacher_file.file.url }}')">
+                                {% if teacher_file.file_type == 'pdf' %}
+                                <i class="fas fa-file-pdf"></i> View PDF
+                                {% elif teacher_file.file_type == 'video' %}
+                                <i class="fas fa-video"></i> Watch Video
+                                {% endif %}
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <p class="text-muted">No teacher-uploaded files available.</p>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Floating Button for Announcements -->
+<button id="showAnnouncementsBtn" class="btn btn-primary rounded-circle position-fixed bottom-0 end-0 m-4" style="z-index: 1050;">
+    <i class="fas fa-bullhorn"></i>
+</button>
+
+<!-- Announcements Modal (hidden by default) -->
+<div class="modal fade" id="announcementsModal" tabindex="-1" aria-labelledby="announcementsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="announcementsModalLabel">Announcements</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="accordion" id="announcementsAccordion">
+                    {% for announcement in announcements %}
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="heading{{ forloop.counter }}">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#collapse{{ forloop.counter }}" aria-expanded="false"
+                                aria-controls="collapse{{ forloop.counter }}">
+                                {{ announcement.title }}
+                            </button>
+                        </h2>
+                        <div id="collapse{{ forloop.counter }}" class="accordion-collapse collapse"
+                            aria-labelledby="heading{{ forloop.counter }}" data-bs-parent="#announcementsAccordion">
+                            <div class="accordion-body">
+                                {{ announcement.message|safe }}
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p class="text-muted">No announcements available.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Viewer Container Styling */
+    .viewer-container {
+        min-height: 100%;
+        height: 100%;
+        border: 2px dashed #007bff;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    /* Ensure row spans full height */
+    .row.g-4 {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    /* Ensure columns use full height */
+    .col-md-8 {
+        display: flex;
+        flex-direction: column;
+        height: 1000px; /* Adjust height as needed */
+        overflow-y: auto;
+    }
+
+    /* Adjust for responsive design */
+    @media (max-width: 768px) {
+        .viewer-container {
+            min-height: 300px;
+        }
+    }
+
+    /* Uniform Button Styling */
+    .uniform-button {
+        width: 130px;
+        height: 40px;
+        text-align: center;
+        font-size: 0.875rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 0;
+        border-radius: 6px;
+        transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    .uniform-button i {
+        margin-right: 5px;
+    }
+
+    /* File Details Styling */
+    .file-details {
+        flex: 1;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .accordion-button {
+        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        border: none;
+    }
+
+    .accordion-button:hover {
+        background: linear-gradient(135deg, #e9ecef, #dfe4ea);
+    }
+    #showAnnouncementsBtn {
+        font-size: 2rem;
+        width: 60px;
+        height: 60px;
+    }
+
+    /* Add some responsiveness for mobile */
+    @media (max-width: 768px) {
+        #showAnnouncementsBtn {
+            width: 50px;
+            height: 50px;
+        }
+    }
+</style>
+
+<script>
+    // JavaScript function to load PDF or video into the viewer container
+    function loadFile(fileType, fileUrl) {
+        const viewer = document.getElementById('viewer');
+        viewer.innerHTML = ''; // Clear previous content
+
+        if (fileType === 'pdf') {
+            const iframe = document.createElement('iframe');
+            iframe.src = fileUrl;
+            iframe.style.width = '100%';
+            iframe.style.height = '100%';
+            iframe.frameBorder = '0';
+            viewer.appendChild(iframe);
+        } else if (fileType === 'video') {
+            const video = document.createElement('video');
+            video.src = fileUrl;
+            video.controls = true;
+            video.style.width = '100%';
+            video.style.height = 'auto';
+            viewer.appendChild(video);
+        } else {
+            viewer.innerHTML = '<p class="text-muted">No file type selected.</p>';
+        }
+    }
+</script>
+<script>
+    // Show Announcements Modal on Button Click
+    const showAnnouncementsBtn = document.getElementById('showAnnouncementsBtn');
+    const announcementsModal = new bootstrap.Modal(document.getElementById('announcementsModal'));
+
+    showAnnouncementsBtn.addEventListener('click', function () {
+        announcementsModal.show();
+    });
+</script>
+
+{% endblock %}

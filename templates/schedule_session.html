@@ -1,0 +1,67 @@
+{% extends 'teacher_base.html' %}
+
+{% block title %}Schedule Session{% endblock %}
+
+{% block content %}
+{% if error %}
+    <div class="alert alert-danger">{{ error }}</div>
+{% endif %}
+
+<div class="container mt-5">
+    <!-- Page Header -->
+    <h3 class="mb-4 text-center text-primary fw-bold">Schedule a Session for Batch: <span class="text-dark">{{batch.batch_code }}</span></h3>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <!-- Session Topic -->
+        <div class="mb-4">
+            <label for="topic" class="form-label fs-5 fw-semibold">Session Topic</label>
+            <div class="input-group">
+                <input type="text" name="topic" id="topic" class="form-control form-control-lg shadow-sm"
+                    placeholder="Enter session topic" required>
+                <span class="input-group-text bg-primary text-white"><i class="bi bi-bookmark-fill"></i></span>
+            </div>
+        </div>
+
+        <!-- Date -->
+        <div class="mb-4">
+            <label for="date" class="form-label fs-5 fw-semibold">Date</label>
+            <div class="input-group">
+                <input type="date" name="date" id="date" class="form-control form-control-lg shadow-sm" required>
+                <span class="input-group-text bg-primary text-white"><i class="bi bi-calendar-check-fill"></i></span>
+            </div>
+        </div>
+
+        <!-- Start Time -->
+        <div class="mb-4">
+            <label for="start_time" class="form-label fs-5 fw-semibold">Start Time</label>
+            <div class="input-group">
+                <input type="time" name="start_time" id="start_time" class="form-control form-control-lg shadow-sm"
+                    required>
+                <span class="input-group-text bg-primary text-white"><i class="bi bi-clock-fill"></i></span>
+            </div>
+        </div>
+
+        <!-- End Time -->
+        <div class="mb-4">
+            <label for="end_time" class="form-label fs-5 fw-semibold">End Time</label>
+            <div class="input-group">
+                <input type="time" name="end_time" id="end_time" class="form-control form-control-lg shadow-sm"
+                    required>
+                <span class="input-group-text bg-primary text-white"><i class="bi bi-clock-fill"></i></span>
+            </div>
+        </div>
+
+        <!-- Buttons -->
+        <div class="d-flex justify-content-between mt-4 mb-4">
+            <button type="submit" class="btn btn-lg btn-success px-5 rounded-pill shadow-lg">
+                <i class="bi bi-check-circle-fill"></i> Schedule Session
+            </button>
+            <a href="{% url 'batch_details' batch.id %}" class="btn btn-lg btn-danger px-5 rounded-pill shadow-lg">
+                <i class="bi bi-x-circle-fill"></i> Cancel
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}

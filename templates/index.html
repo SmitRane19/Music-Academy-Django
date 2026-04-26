@@ -1,0 +1,936 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}
+Goonj | Home
+{% endblock title %}
+
+
+{% block content %}
+<style>
+    .carousel,
+    .carousel-item {
+        height: 100vh;
+        /* Full viewport height */
+    }
+
+    .carousel-item img {
+        object-fit: cover;
+        /* Ensures the image covers the entire area */
+        height: 100%;
+        /* Matches the height of the carousel */
+        width: 100%;
+        /* Matches the width of the carousel */
+    }
+
+    .carousel-caption {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        text-align: center;
+        z-index: 10;
+        color: white;
+        width: 90%;
+    }
+
+    /* Text position adjustments for each slide */
+    .carousel-item-1 .carousel-caption {
+        right: 30%;
+        /* Move text and button slightly to the left */
+        text-align: center;
+        /* Align text to the left */
+    }
+
+    .carousel-item-2 .carousel-caption {
+        left: 30%;
+        /* Move text and button slightly to the right */
+        transform: translateX(-50%) translateY(-50%);
+        /* Center text horizontally */
+        text-align: center;
+        /* Center the text */
+    }
+
+    .carousel-item-3 .carousel-caption {
+        left: 50%;
+        /* Move text and button further to the right */
+        transform: translateX(-70%) translateY(-50%);
+        /* Adjust position to the right */
+        text-align: center;
+        /* Align text to the right */
+    }
+
+    .carousel-caption h3 {
+        font-size: 3vw;
+        /* Adjusted for larger screens */
+        font-weight: bold;
+        margin-bottom: 15px;
+    }
+
+    .carousel-caption p {
+        font-size: 1.5vw;
+        /* Adjusted for larger screens */
+        margin-bottom: 20px;
+    }
+
+    .carousel-caption .btn {
+        font-size: 1.2vw;
+        padding: 12px 24px;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .carousel-caption h3 {
+            font-size: 2rem;
+        }
+
+        .carousel-caption p {
+            font-size: 1rem;
+        }
+
+        .carousel-caption .btn {
+            font-size: 1rem;
+            padding: 10px 20px;
+        }
+
+        /* Adjust the text positioning for smaller screens */
+        .carousel-item-1 .carousel-caption,
+        .carousel-item-2 .carousel-caption,
+        .carousel-item-3 .carousel-caption {
+            left: 50%;
+            /* Center the text on small screens */
+            transform: translate(-50%, -50%);
+        }
+    }
+
+    @media (max-width: 576px) {
+        .carousel-caption h3 {
+            font-size: 2rem;
+        }
+
+        .carousel-caption p {
+            font-size: 0.9rem;
+        }
+
+        .carousel-caption .btn {
+            font-size: 0.8rem;
+            padding: 8px 16px;
+        }
+
+        .carousel,
+        .carousel-item {
+            height: 100vh;
+            /* Maintain full-screen height */
+        }
+    }
+
+    .carousel-control-prev,
+    .carousel-control-next {
+        z-index: 20;
+        /* Ensure buttons are on top */
+    }
+
+    /* Animation for the fade-in effect */
+    .fade-in {
+        opacity: 0;
+        transform: translateY(20px);
+        transition: opacity 2s ease-out, transform 2s ease-out;
+    }
+
+    .fade-in.visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    /* CSS for fade-up animation */
+    @keyframes fade-up {
+        from {
+            transform: translateY(30px);
+            opacity: 0;
+        }
+
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+    .fade-up {
+        animation: fade-up 2s ease-out;
+    }
+
+    /* Chatbot Icon */
+    #chatbot-icon {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        width: 60px;
+        height: 60px;
+        background-color: #007bff;
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 24px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        cursor: pointer;
+        z-index: 1000;
+        transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    #chatbot-icon:hover {
+        background-color: #0056b3;
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Chatbox */
+    #chatbox {
+        position: fixed;
+        bottom: 90px;
+        right: 20px;
+        width: 300px;
+        background: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        z-index: 1000;
+        display: flex;
+        flex-direction: column;
+        max-height: 500px;
+        overflow: hidden;
+        transition: transform 0.3s ease-in-out;
+    }
+
+    #chatbox.hidden {
+        display: none;
+    }
+
+    /* Chatbox Header */
+    #chatbox-header {
+        background: #007bff;
+        color: white;
+        padding: 15px;
+        border-radius: 10px 10px 0 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-weight: bold;
+        font-size: 16px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    #chatbox-header button {
+        background: none;
+        border: none;
+        color: white;
+        font-size: 20px;
+        cursor: pointer;
+    }
+
+    #chatbox-header button:hover {
+        color: #ffd700;
+    }
+
+    /* Chatbox Body */
+    #chatbox-body {
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        overflow-y: auto;
+    }
+
+    /* Chat Messages */
+    #chat-messages {
+        max-height: 300px;
+        overflow-y: auto;
+        margin-bottom: 10px;
+    }
+
+    .message {
+        display: flex;
+        margin-bottom: 10px;
+        align-items: center;
+        animation: fadeIn 0.3s ease-out;
+    }
+
+    .message.user {
+        justify-content: flex-end;
+    }
+
+    .message.bot {
+        justify-content: flex-start;
+    }
+
+    .message .message-content {
+        max-width: 75%;
+        padding: 12px 15px;
+        border-radius: 15px;
+        font-size: 14px;
+        word-wrap: break-word;
+    }
+
+    .message.user .message-content {
+        background-color: #007bff;
+        color: white;
+        margin-right: 10px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .message.bot .message-content {
+        background-color: #f1f1f1;
+        color: #333;
+        margin-left: 10px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Suggestions */
+    .suggestions-container {
+        margin-top: 10px;
+        font-size: 14px;
+        background-color: #f9f9f9;
+        padding: 10px;
+        border-radius: 8px;
+        display: none;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .suggestion-item {
+        background-color: #f1f1f1;
+        margin: 5px;
+        padding: 8px 12px;
+        cursor: pointer;
+        border-radius: 5px;
+        transition: background-color 0.2s ease;
+    }
+
+    .suggestion-item:hover {
+        background-color: #ddd;
+    }
+
+    /* Chat Input */
+    #chat-input {
+        display: flex;
+        gap: 10px;
+        padding: 10px;
+        background-color: #f9f9f9;
+        border-radius: 10px 10px 0 0;
+    }
+
+    #chat-input input {
+        flex: 1;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 25px;
+        font-size: 14px;
+        transition: border-color 0.2s ease;
+    }
+
+    #chat-input input:focus {
+        border-color: #007bff;
+    }
+
+    #chat-input button {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        padding: 10px 14px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    #chat-input button:hover {
+        background-color: #0056b3;
+    }
+
+    /* FadeIn Animation */
+    @keyframes fadeIn {
+        0% { opacity: 0; transform: translateY(10px); }
+        100% { opacity: 1; transform: translateY(0); }
+    }
+
+
+</style>
+
+
+<div class="container">
+    <!-- Carousel 1 -->
+    <div id="carousel1" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner">
+            <!-- Guitar Slide -->
+            <div class="carousel-item active carousel-item-1">
+                <img src="{% static 'images/guitar.png' %}" class="d-block w-100" alt="...">
+                <div class="carousel-caption">
+                    <h3 class="h3">"Strum Your Way to Success"</h3>
+                    <p class="p">Learn guitar with step-by-step tutorials.</p>
+                    {% if guitar_course %}
+                    <a href="{% url 'offline_course_details' guitar_course.id %}"
+                        class="btn btn-primary btn-responsive">Guitar <i class="fa-solid fa-circle-info"></i></a>
+                    {% else %}
+                    <a href="#" class="btn btn-secondary btn-responsive" disabled>No Guitar Course Available</a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Piano Slide -->
+            <div class="carousel-item carousel-item-2">
+                <img src="{% static 'images/piano.jpg' %}" class="d-block w-100" alt="...">
+                <div class="carousel-caption">
+                    <h3 class="h3">Play the Piano Like a Pro</h3>
+                    <p class="p">Master the piano with easy-to-follow lessons.</p>
+                    {% if piano_course %}
+                    <a href="{% url 'offline_course_details' piano_course.id %}"
+                        class="btn btn-primary btn-responsive">Piano <i class="fa-solid fa-circle-info"></i></a>
+                    {% else %}
+                    <a href="#" class="btn btn-secondary btn-responsive" disabled>No Piano Course Available</a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Vocals Slide -->
+            <div class="carousel-item carousel-item-3">
+                <img src="{% static 'images/vocal.png' %}" class="d-block w-100" alt="...">
+                <div class="carousel-caption">
+                    <h3 class="h3">Find Your Voice</h3>
+                    <p class="p">Enhance your vocal skills and range with expert guidance.</p>
+                    {% if vocals_course %}
+                    <a href="{% url 'offline_course_details' vocals_course.id %}"
+                        class="btn btn-primary btn-responsive">Vocals <i class="fa-solid fa-circle-info"></i></a>
+                    {% else %}
+                    <a href="#" class="btn btn-secondary btn-responsive" disabled>No Vocals Course Available</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#carousel1" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carousel1" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+        </button>
+    </div>
+</div>
+
+
+
+<!-- Music School Advantages Section -->
+<div class="container my-5">
+    <h2 class="text-center mb-5 text-primary fw-bold">Why Choose Our Music School?</h2>
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        <!-- Card 1 -->
+        <div class="col fade-in">
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                <img src="{% static 'images/teacher.png' %}" class="card-img-top" alt="Advantage 1"
+                    style="height: 250px; object-fit: cover;">
+                <div class="card-body d-flex flex-column justify-content-between">
+                    <h5 class="card-title text-center text-primary fs-4 fw-bold mb-3">Personalized Lessons</h5>
+                    <p class="card-text text-muted text-center mb-4">Our instructors tailor lessons to meet each
+                        student's unique needs.</p>
+                    <div class="text-center">
+                        <!-- <button class="btn btn-primary rounded-pill px-4 py-2">Learn More</button> -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="col fade-in">
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                <img src="{% static 'images/instructor.png' %}" class="card-img-top" alt="Advantage 2"
+                    style="height: 250px; object-fit: cover;">
+                <div class="card-body d-flex flex-column justify-content-between">
+                    <h5 class="card-title text-center text-primary fs-4 fw-bold mb-3">Expert Instructors</h5>
+                    <p class="card-text text-muted text-center mb-4">Learn from experienced professionals who are
+                        passionate about music.</p>
+                    <div class="text-center">
+                        <!-- <button class="btn btn-primary rounded-pill px-4 py-2">Learn More</button> -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="col fade-in">
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                <img src="{% static 'images/studio.png' %}" class="card-img-top" alt="Advantage 3"
+                    style="height: 250px; object-fit: cover;">
+                <div class="card-body d-flex flex-column justify-content-between">
+                    <h5 class="card-title text-center text-primary fs-4 fw-bold mb-3">State-of-the-Art Facilities</h5>
+                    <p class="card-text text-muted text-center mb-4">Our classrooms and practice spaces are equipped
+                        with the latest tools.</p>
+                    <div class="text-center">
+                        <!-- <button class="btn btn-primary rounded-pill px-4 py-2">Learn More</button> -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 4 -->
+        <div class="col fade-in">
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                <img src="{% static 'images/calender.jpg' %}" class="card-img-top" alt="Advantage 4"
+                    style="height: 250px; object-fit: cover;">
+                <div class="card-body d-flex flex-column justify-content-between">
+                    <h5 class="card-title text-center text-primary fs-4 fw-bold mb-3">Flexible Scheduling</h5>
+                    <p class="card-text text-muted text-center mb-4">We offer lessons at times that work best for you
+                        and your schedule.</p>
+                    <div class="text-center">
+                        <!-- <button class="btn btn-primary rounded-pill px-4 py-2">Learn More</button> -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 5 -->
+        <div class="col fade-in">
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                <img src="{% static 'images/learning.jpg' %}" class="card-img-top" alt="Advantage 5"
+                    style="height: 250px; object-fit: cover;">
+                <div class="card-body d-flex flex-column justify-content-between">
+                    <h5 class="card-title text-center text-primary fs-4 fw-bold mb-3">Interactive Learning</h5>
+                    <p class="card-text text-muted text-center mb-4">Engage with music through interactive and hands-on
+                        experiences.</p>
+                    <div class="text-center">
+                        <!-- <button class="btn btn-primary rounded-pill px-4 py-2">Learn More</button> -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 6 -->
+        <div class="col fade-in">
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                <img src="{% static 'images/stage.jpg' %}" class="card-img-top" alt="Advantage 6"
+                    style="height: 250px; object-fit: cover;">
+                <div class="card-body d-flex flex-column justify-content-between">
+                    <h5 class="card-title text-center text-primary fs-4 fw-bold mb-3">Performance Opportunities</h5>
+                    <p class="card-text text-muted text-center mb-4">Showcase your skills at various performances and
+                        recitals throughout the year.</p>
+                    <div class="text-center">
+                        <!-- <button class="btn btn-primary rounded-pill px-4 py-2">Learn More</button> -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<div class="container my-5 fade-up-element">
+    <h2 class="fw-bold mb-4 text-center text-primary">Our Courses</h2>
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4" id="courses-container">
+        <!-- Loop through online courses -->
+        {% for course in online_courses %}
+        <div class="col mb-4 course-item"
+            style="display: {% if forloop.counter <= 3 %} block {% else %} none {% endif %};">
+            <a href="{% url 'online_course_details' course.id %}" class="text-decoration-none text-dark">
+                <div class="card shadow-lg rounded-4 overflow-hidden h-100" style="border: none;">
+                    <img src="{{ course.image.url }}" class="card-img-top" alt="{{ course.title }}"
+                        style="height: 200px; object-fit: cover;">
+                    <span class="badge bg-info text-dark position-absolute top-0 start-0 m-2">Online</span>
+                    <div class="card-body d-flex flex-column justify-content-between">
+                        <h5 class="card-title text-truncate" title="{{ course.title }}"
+                            style="font-size: 1.2rem; font-weight: bold;">{{ course.title }}</h5>
+                        <!-- <p class="card-text text-muted mb-3" style="font-size: 1rem;">{{ course.description|truncatewords:15 }}</p> -->
+                        <div class="d-flex justify-content-between align-items-center">
+                            <p class="card-text text-secondary"><strong>Fees:</strong> ₹{{ course.fees }}</p>
+                            <button class="btn btn-primary rounded-pill shadow-sm" style="font-size: 1rem;">More Info <i
+                                    class="fa-solid fa-circle-info"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+        {% endfor %}
+
+        <!-- Loop through offline courses -->
+        {% for course in offline_courses %}
+        <div class="col mb-4 course-item"
+            style="display: {% if forloop.counter <= 3 %} block {% else %} none {% endif %};">
+            <a href="{% url 'offline_course_details' course.id %}" class="text-decoration-none text-dark">
+                <div class="card shadow-lg rounded-4 overflow-hidden h-100" style="border: none;">
+                    <img src="{{ course.image.url }}" class="card-img-top" alt="{{ course.title }}"
+                        style="height: 200px; object-fit: cover;">
+                    <span class="badge bg-warning text-dark position-absolute top-0 start-0 m-2">Offline</span>
+                    <div class="card-body d-flex flex-column justify-content-between">
+                        <h5 class="card-title text-truncate" title="{{ course.title }}"
+                            style="font-size: 1.2rem; font-weight: bold;">{{ course.title }}</h5>
+                        <!-- <p class="card-text text-muted mb-3" style="font-size: 1rem;">{{ course.description|truncatewords:15 }}</p> -->
+                        <div class="d-flex justify-content-between align-items-center">
+                            <p class="card-text text-secondary"><strong>Fees:</strong> ₹{{ course.fees }}</p>
+                            <button class="btn btn-primary rounded-pill shadow-sm" style="font-size: 1rem;">More Info <i
+                                    class="fa-solid fa-circle-info"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- View More Button -->
+    <div class="text-center">
+        <button id="view-more-btn" class="btn btn-secondary rounded-pill shadow-sm" onclick="showMoreCourses()"
+            style="font-size: 1rem;">View More Courses</button>
+    </div>
+</div>
+
+
+<!-- Start About Us -->
+<section id="aboutus" class="container-fluid px-0 my-5">
+    <div class="row align-items-center mb-5">
+        <!-- Our Story Section -->
+        <div class="col-md-6 order-2 order-md-1 mb-4 mb-md-0">
+            <img src="{% static 'images/story.jpg' %}" alt="Our Story" class="img-fluid rounded-3 shadow-lg">
+        </div>
+        <div class="col-md-6 text-center text-md-start order-1 order-md-2">
+            <div class="row justify-content-center">
+                <div class="col-10 col-lg-8 blurb">
+                    <h2 class="display-4 text-primary fw-bold mb-4">Our Story</h2>
+                    <p class="lead text-muted">Goonj Music Academy was founded with a vision to provide world-class
+                        music education and nurture musical talent from all walks of life. Our academy brings together
+                        expert instructors and a diverse community of learners, creating an environment where music
+                        comes to life. From humble beginnings, we have grown into a trusted name in music education,
+                        offering courses in guitar, piano, vocals, and more.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row align-items-center mb-5">
+        <!-- Our Mission Section -->
+        <div class="col-md-6 text-center text-md-start mb-4 mb-md-0">
+            <div class="row justify-content-center">
+                <div class="col-10 col-lg-8 blurb">
+                    <h2 class="display-4 text-primary fw-bold mb-4">Our Mission</h2>
+                    <p class="lead text-muted">Goonj Music Academy is dedicated to empowering individuals of all ages and backgrounds to discover the joy of music through high-quality instruction. We strive to create a nurturing environment where students can develop their musical talents, cultivate a lifelong love of learning, and express themselves creatively.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-4 mb-md-0">
+            <img src="{% static 'images/mission.jpg' %}" alt="Our Mission" class="img-fluid rounded-3 shadow-lg">
+        </div>
+    </div>
+
+    <div class="row align-items-center mb-5">
+        <!-- Our Values Section -->
+        <div class="col-md-6 order-2 order-md-1 mb-4 mb-md-0">
+            <img src="{% static 'images/values.jpg' %}" alt="Our Values" class="img-fluid rounded-3 shadow-lg">
+        </div>
+        <div class="col-md-6 text-center text-md-start order-1 order-md-2">
+            <div class="row justify-content-center">
+                <div class="col-10 col-lg-8 blurb">
+                    <h2 class="display-4 text-primary fw-bold mb-4">Our Values</h2>
+                    <p class="lead text-muted">At Goonj Music Academy, we uphold the values of excellence, inclusivity, passion, community, and innovation. We strive for excellence in all aspects of our teaching, ensuring that every student receives the highest quality instruction. We embrace inclusivity by creating an environment where all are welcome, regardless of their background or experience.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- End About Us -->
+
+
+
+<div class="container mt-5">
+    <h2 class="text-center mb-4 text-primary fw-bold display-4">Our Teachers</h2>
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        {% if teachers %}
+        {% for teacher in teachers %}
+        <div class="col">
+            <div class="card h-100 shadow border-0 rounded-4 overflow-hidden">
+                <img src="{{ teacher.profile_picture.url }}" class="card-img-top"
+                    alt="{{ teacher.first_name }} {{ teacher.last_name }}" style="height: 250px; object-fit: cover;">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title text-center text-dark fw-bold mb-3">{{ teacher.first_name|title }} {{teacher.last_name|title }}</h5>
+                    <p class="card-text text-muted mb-4"><strong>Category:</strong> {{ teacher.get_category_display }}
+                    </p>
+                    <a href="mailto:{{ teacher.email }}" class="btn btn-primary mt-auto w-100 rounded-pill">Contact</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <p class="text-center text-muted">No teachers found.</p>
+        {% endif %}
+    </div>
+</div>
+
+
+
+<!-- Start Review Section -->
+<div class="container mt-5">
+    <h2 class="text-center mb-5 fw-bold text-primary display-4">Student Testimonials</h2>
+    <div class="row row-cols-1 row-cols-md-2 g-4">
+        <!-- First Review Card -->
+        <div class="col">
+            <div class="card shadow-sm border-0 rounded-4 h-100">
+                <div class="card-body d-flex flex-column text-center">
+                    <div class="d-flex justify-content-center mb-3">
+                        <img src="{% static 'images/king.jpg' %}" alt="Harlequin King" class="rounded-circle"
+                            style="width: 70px; height: 70px; object-fit: cover;">
+                    </div>
+                    <h5 class="card-title mb-3 text-dark fw-bold">Harlequin King</h5>
+                    <p class="card-text text-muted">"The guitar program at Goonj Music Academy provided me with a solid foundation in music theory and practical skills."
+                    </p>
+                    <div class="d-flex justify-content-center">
+                        <!-- Star Rating -->
+                        <i class="fas fa-star text-warning"></i>
+                        <i class="fas fa-star text-warning"></i>
+                        <i class="fas fa-star text-warning"></i>
+                        <i class="fas fa-star text-warning"></i>
+                        <i class="fas fa-star-half-alt text-warning"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Second Review Card -->
+        <div class="col">
+            <div class="card shadow-sm border-0 rounded-4 h-100">
+                <div class="card-body d-flex flex-column text-center">
+                    <div class="d-flex justify-content-center mb-3">
+                        <img src="{% static 'images/casey.jpg' %}" alt="Casey Stewart" class="rounded-circle"
+                            style="width: 70px; height: 70px; object-fit: cover;">
+                    </div>
+                    <h5 class="card-title mb-3 text-dark fw-bold">Casey Stewart</h5>
+                    <p class="card-text text-muted">"Highly recommend the piano program! The instructors are patient and knowledgeable, and I've seen significant progress in my playing."</p>
+                    <div class="d-flex justify-content-center">
+                        <!-- Star Rating -->
+                        <i class="fas fa-star text-warning"></i>
+                        <i class="fas fa-star text-warning"></i>
+                        <i class="fas fa-star text-warning"></i>
+                        <i class="fas fa-star text-warning"></i>
+                        <i class="fas fa-star text-warning"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row row-cols-1 row-cols-md-2 g-4 mt-4">
+        <!-- Third Review Card -->
+        <div class="col">
+            <div class="card shadow-sm border-0 rounded-4 h-100">
+                <div class="card-body d-flex flex-column text-center">
+                    <div class="d-flex justify-content-center mb-3">
+                        <img src="{% static 'images/emily.jpg' %}" alt="Emily Stone" class="rounded-circle"
+                            style="width: 70px; height: 70px; object-fit: cover;">
+                    </div>
+                    <h5 class="card-title mb-3 text-dark fw-bold">Emily Stone</h5>
+                    <p class="card-text text-muted">"The vocal coaching at Goonj Music Academy helped me to develop my voice and build confidence in my singing abilities."</p>
+                    <div class="d-flex justify-content-center">
+                        <!-- Star Rating -->
+                        <i class="fas fa-star text-warning"></i>
+                        <i class="fas fa-star text-warning"></i>
+                        <i class="fas fa-star text-warning"></i>
+                        <i class="fas fa-star text-warning"></i>
+                        <i class="fas fa-star-half-alt text-warning"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Fourth Review Card -->
+        <div class="col">
+            <div class="card shadow-sm border-0 rounded-4 h-100">
+                <div class="card-body d-flex flex-column text-center">
+                    <div class="d-flex justify-content-center mb-3">
+                        <img src="{% static 'images/owens.jpg' %}" alt="Michael Owens" class="rounded-circle"
+                            style="width: 70px; height: 70px; object-fit: cover;">
+                    </div>
+                    <h5 class="card-title mb-3 text-dark fw-bold">Michael Owens</h5>
+                    <p class="card-text text-muted">"Goonj Music Academy offers a well-structured and engaging curriculum across all instruments. I've thoroughly enjoyed my experience with their piano and vocal courses."
+                    </p>
+                    <div class="d-flex justify-content-center">
+                        <!-- Star Rating -->
+                        <i class="fas fa-star text-warning"></i>
+                        <i class="fas fa-star text-warning"></i>
+                        <i class="fas fa-star text-warning"></i>
+                        <i class="fas fa-star text-warning"></i>
+                        <i class="fas fa-star text-warning"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End Review Section -->
+
+<div id="chatbot-container">
+    <!-- Floating Icon -->
+    <div id="chatbot-icon" onclick="toggleChatbox()">💬</div>
+
+    <!-- Chatbox -->
+    <div id="chatbox" class="hidden">
+        <div id="chatbox-header">
+            <span>Chat with us!</span>
+            <button onclick="toggleChatbox()">×</button>
+        </div>
+        <div id="chatbox-body">
+            <div id="chat-messages"></div>
+
+            <!-- Suggestions Container -->
+            <div id="suggestions-container" class="suggestions-container" style="display: none;">
+                <ul id="suggestion-list"></ul>
+            </div>
+
+            <div id="chat-input">
+                <input type="text" id="user-input" placeholder="Type your message..." />
+                <button id="send-button">Send</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+    // Inject CSRF token directly into JavaScript
+    var csrfToken = '{{ csrf_token }}'; // Inject Django's CSRF token here
+
+    function toggleChatbox() {
+        const chatbox = document.getElementById("chatbox");
+        chatbox.classList.toggle("hidden");
+    }
+
+    function addMessage(content, sender) {
+        const chatMessages = document.getElementById("chat-messages");
+
+        if (!content) return; // Prevent empty messages
+
+        // Create a new div element for the message
+        const messageDiv = document.createElement('div');
+        messageDiv.classList.add('message', sender);
+
+        // Define icons for the user and bot
+        const icon = sender === 'user' ? '<i class="fas fa-user"></i>' : '<i class="fas fa-robot"></i>';
+
+        // Insert the message with the appropriate icon
+        messageDiv.innerHTML = `
+            ${sender === 'user' ? '' : icon}
+            <div class="message-content">${content}</div>
+            ${sender === 'user' ? icon : ''}
+        `;
+
+        // Append the message to the chat
+        chatMessages.appendChild(messageDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight; // Auto-scroll to the bottom
+    }
+
+    function displaySuggestions(suggestions) {
+        const suggestionList = document.getElementById("suggestion-list");
+        const suggestionsContainer = document.getElementById("suggestions-container");
+
+        suggestionList.innerHTML = ''; // Clear previous suggestions
+
+        suggestions.forEach(suggestion => {
+            const suggestionItem = document.createElement('li');
+            suggestionItem.classList.add('suggestion-item');
+            suggestionItem.textContent = suggestion;
+            suggestionList.appendChild(suggestionItem);
+        });
+
+        // Show the suggestions container
+        suggestionsContainer.style.display = 'block';
+    }
+
+    function sendMessage() {
+        const userInput = document.getElementById("user-input").value.trim();
+        if (!userInput) return; // Prevent empty messages
+
+        // Display user's message
+        addMessage(userInput, 'user');
+        document.getElementById("user-input").value = ""; // Clear input field
+
+        // Fetch response from the API
+        fetch('/chatbot-api/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken // Use the injected CSRF token here
+            },
+            body: JSON.stringify({ query: userInput })
+        })
+            .then(response => response.json())
+            .then(data => {
+                // Display the bot's response
+                addMessage(data.response, 'bot');
+
+                // If there are suggestions, display them
+                if (data.suggestions && data.suggestions.length > 0) {
+                    displaySuggestions(data.suggestions);
+                } else {
+                    // Hide suggestions container if no suggestions
+                    document.getElementById("suggestions-container").style.display = 'none';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                addMessage("An error occurred. Please try again later.", 'bot');
+            });
+    }
+
+    document.getElementById("send-button").addEventListener("click", sendMessage);
+</script>
+
+<script>
+    function showMoreCourses() {
+        const courseItems = document.querySelectorAll('.course-item');
+        courseItems.forEach((item, index) => {
+            if (index >= 3) { // Show courses after the first 3
+                item.style.display = 'block';
+            }
+        });
+
+        // Hide the "View More" button after showing all courses
+        document.getElementById('view-more-btn').style.display = 'none';
+    }
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const elements = document.querySelectorAll('.fade-in');
+
+        function checkVisibility() {
+            const windowHeight = window.innerHeight;
+            elements.forEach(element => {
+                const elementTop = element.getBoundingClientRect().top;
+                if (elementTop < windowHeight - 100) {
+                    element.classList.add('visible');
+                }
+            });
+        }
+
+        // Check visibility on scroll and on load
+        window.addEventListener('scroll', checkVisibility);
+        checkVisibility();
+    });
+
+    // JavaScript to trigger fade-up animation on scroll
+    document.addEventListener("DOMContentLoaded", function () {
+        const fadeUpElements = document.querySelectorAll(".fade-up-element");
+
+        function checkScroll() {
+            fadeUpElements.forEach(function (element) {
+                const rect = element.getBoundingClientRect();
+                const isVisible = rect.top >= 0 && rect.top <= window.innerHeight;
+
+                if (isVisible) {
+                    element.classList.add("fade-up");
+                }
+            });
+        }
+
+        // Run checkScroll on page load and on scroll
+        checkScroll();
+        window.addEventListener("scroll", checkScroll);
+    });
+
+
+</script>
+{% endblock content %}

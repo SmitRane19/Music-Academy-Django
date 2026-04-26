@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+{% block title %}
+Goonj | Confirm Order
+{% endblock title %}
+
+{% block content %}
+<div class="container my-5">
+    <h2 class="mb-4 text-center text-primary fw-bold">Confirm Your Order</h2>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <!-- Online Courses Section -->
+        <div class="mb-4">
+            <h4 class="h5 text-secondary border-bottom pb-2">Online Courses</h4>
+            {% if online_courses %}
+            <div class="list-group">
+                {% for item in online_courses %}
+                <div
+                    class="list-group-item d-flex justify-content-between align-items-center shadow rounded mb-3 p-3 course-item">
+                    <div>
+                        <strong class="fs-5">{{ item.course.title }}</strong>
+                        <p class="mb-0 text-muted">Price: ₹{{ item.course.fees }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="text-muted fst-italic">No online courses selected.</p>
+            {% endif %}
+        </div>
+
+        <!-- Offline Courses Section -->
+        <div class="mb-4">
+            <h4 class="h5 text-secondary border-bottom pb-2">Offline Courses</h4>
+            {% if offline_courses %}
+            <div class="list-group">
+                {% for item in offline_courses %}
+                <div
+                    class="list-group-item d-flex justify-content-between align-items-center shadow rounded mb-3 p-3 course-item">
+                    <div>
+                        <strong class="fs-5">{{ item.course.title }}</strong>
+                        <p class="mb-1 text-muted">Price: ₹{{ item.course.fees }}</p>
+                        <p class="mb-0"><strong>Batch:</strong> {{ item.batch.batch_code }}</p>
+                        <p class="mb-0"><strong>Start Date:</strong> {{ item.batch.start_date }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="text-muted fst-italic">No offline courses selected.</p>
+            {% endif %}
+        </div>
+
+        <!-- Total Amount Section -->
+        <div class="d-flex justify-content-between align-items-center mt-4 p-3 border-top">
+            <h3 class="text-success fw-bold">Total Amount: ₹{{ total_amount }}</h3>
+            <button type="submit" class="btn btn-lg btn-success shadow-sm confirm-btn">Confirm Order</button>
+        </div>
+    </form>
+</div>
+
+<style>
+    .container {
+        border-radius: 10px;
+        padding: 30px;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+    }
+
+    .course-item {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .course-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.15);
+        background-color: #fdfdfd;
+    }
+
+    .confirm-btn {
+        background-image: linear-gradient(90deg, #28a745, #218838);
+        color: #fff;
+        border: none;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    .confirm-btn:hover {
+        background-color: #1e7e34;
+        transform: scale(1.05);
+    }
+</style>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        // Add hover effects
+        const courseItems = document.querySelectorAll('.course-item');
+        courseItems.forEach(item => {
+            item.addEventListener('mouseenter', () => {
+                item.classList.add('shadow-lg');
+            });
+            item.addEventListener('mouseleave', () => {
+                item.classList.remove('shadow-lg');
+            });
+        });
+
+        // Add confirmation alert on button click
+        const confirmButton = document.querySelector('.confirm-btn');
+        confirmButton.addEventListener('click', (event) => {
+            if (!confirm("Are you sure you want to confirm your order?")) {
+                event.preventDefault();
+            }
+        });
+    });
+
+</script>
+{% endblock content %}

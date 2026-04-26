@@ -1,0 +1,66 @@
+{% extends 'teacher_base.html' %}
+
+{% block title %}Mark Attendance{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <!-- Title Section -->
+    <h3 class="mb-4 text-center text-primary fw-bold">Mark Attendance for Batch: <span class="text-dark">{{ batch.batch_code }}</span></h3>
+
+    <form method="post">
+        {% csrf_token %}
+        
+        <!-- Session Selection Dropdown -->
+        <div class="mb-4">
+            <label for="session" class="form-label fs-5 fw-semibold">Select Session:</label>
+            <div class="input-group">
+                <select name="session_id" id="session" class="form-select form-select-lg shadow-sm" required>
+                    {% for session in sessions %}
+                        <option value="{{ session.id }}" {% if session.id == session.id %}selected{% endif %}>
+                            {{ session.topic }} - {{ session.date }}
+                        </option>
+                    {% endfor %}
+                </select>
+                <span class="input-group-text bg-primary text-white"><i class="bi bi-calendar-check-fill"></i></span>
+            </div>
+        </div>
+
+        <!-- Students Attendance Table -->
+        <div class="card shadow-lg rounded-3 p-4 mt-4">
+            <h4 class="mb-3 text-center text-secondary">Students List</h4>
+            <table class="table table-bordered table-striped table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th>Student Name</th>
+                        <th>Status</th>
+                        <th>Notes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for enrollment in students %}
+                        <tr>
+                            <td>{{ enrollment.student.first_name|title }} {{ enrollment.student.last_name|title }}</td>
+                            <td>
+                                <select name="status_{{ enrollment.student.id }}" class="form-select shadow-sm" required>
+                                    <option value="Present" {% if enrollment.attendance_set.first.status == 'Present' %}selected{% endif %}>Present</option>
+                                    <option value="Absent" {% if enrollment.attendance_set.first.status == 'Absent' %}selected{% endif %}>Absent</option>
+                                </select>
+                            </td>
+                            <td>
+                                <input type="text" name="notes_{{ enrollment.student.id }}" class="form-control shadow-sm" placeholder="Optional notes">
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="d-flex justify-content-end mt-4 mb-4">
+            <button type="submit" class="btn btn-lg btn-success px-5 rounded-pill shadow-lg">
+                <i class="bi bi-check-circle-fill"></i> Submit Attendance
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}
